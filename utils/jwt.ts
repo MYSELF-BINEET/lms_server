@@ -7,8 +7,8 @@ interface ITokenOptions {
   expires: Date;
   maxAge: number;
   httpOnly: boolean;
-  // sameSite: "strict";
-  // secure?: boolean;
+  sameSite: "strict";
+  secure?: boolean;
 }
 
 // parse enviroment variables to integrates with fallback values
@@ -26,8 +26,8 @@ export const accessTokenOptions: ITokenOptions = {
   expires: new Date(Date.now() + accessTokenExpire * 60  * 60 * 1000),
   maxAge: accessTokenExpire * 60 * 60 * 1000,
   httpOnly: true,
-  // sameSite: "strict",
-  // secure: true,
+  sameSite: "strict",
+  secure: true,
 };
 
 
@@ -35,8 +35,8 @@ export const refreshTokenOptions: ITokenOptions = {
     expires: new Date(Date.now() + refreshTokenExpire * 24 * 60 * 60 * 1000),
     maxAge: refreshTokenExpire * 24 * 60 * 60 * 1000,
     httpOnly: true,
-    // sameSite: 'strict';
-    // secure: true,
+    sameSite: 'strict',
+    secure: true,
   };
   
 

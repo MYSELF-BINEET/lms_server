@@ -187,24 +187,29 @@ export const logoutUser = CatchAsyncError(
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         const refresh_token = req.cookies.refresh_token as string;
+
         const decoded = jwt.verify(
           refresh_token,
           process.env.REFRESH_TOKEN as string
         ) as JwtPayload;
+
   
         const message = "Could not refresh token";
         if (!decoded) {
-          return next(new ErrorHandler(message, 400));
+          return next(new ErrorHandler(message, 405));
         }
+
+
         const session = await redis.get(decoded.id as string);
            
         if (!session) {
           return next(
-            new ErrorHandler("Please login for access this resources!", 400)
+            new ErrorHandler("Please login for access this resources!", 404)
           );
         }
         
         const user = JSON.parse(session);
+
   
         const accessToken = jwt.sign(
           { id: user._id },
@@ -221,6 +226,7 @@ export const logoutUser = CatchAsyncError(
             expiresIn: "3d",
           }
         );
+
         await redis.set(user._id, JSON.stringify(user), "EX", 604800); // 7days
 
   
@@ -237,7 +243,7 @@ export const logoutUser = CatchAsyncError(
   
          next();
       } catch (error: any) {
-        return next(new ErrorHandler(error.message, 400));
+        next(new ErrorHandler(error.message, 410));
       }
     }
   );
@@ -263,7 +269,7 @@ export const logoutUser = CatchAsyncError(
         }
         return next();
       } catch (error: any) {
-          return next(new ErrorHandler(error.message, 400));
+          return next(new ErrorHandler(error.message, 403));
       }
     }
   );

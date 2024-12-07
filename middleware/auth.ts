@@ -12,15 +12,15 @@ export const isAuthenticated = CatchAsyncError(
 
     if (!access_token) {
       return next(
-        new ErrorHandler("Please login to access this resource", 400)
+        new ErrorHandler("Please login to access this resource", 406)
       );
     }
 
     const decoded = jwt.decode(access_token) as JwtPayload;
-    console.log(decoded);
+    // console.log(decoded);
 
     if (!decoded) {
-      return next(new ErrorHandler("access token is not valid", 400));
+      return next(new ErrorHandler("access token is not valid", 407));
     }
 
     // check if the access token is expired
@@ -37,7 +37,7 @@ export const isAuthenticated = CatchAsyncError(
 
       if (!user) {
         return next(
-          new ErrorHandler("Please login to access this resource", 400)
+          new ErrorHandler("Please login to access this resource", 408)
         );
       }
 
@@ -55,7 +55,7 @@ export const authorizeRoles = (...roles: string[]) => {
       return next(
         new ErrorHandler(
           `Role: ${req.user?.role} is not allowed to access this resource`,
-          403
+          409
         )
       );
     }

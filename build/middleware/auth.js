@@ -13,12 +13,12 @@ const user_controller_1 = require("../controllers/user.controller");
 exports.isAuthenticated = (0, catchAsyncErrors_1.CatchAsyncError)(async (req, res, next) => {
     const access_token = req.cookies.access_token;
     if (!access_token) {
-        return next(new ErrorHandler_1.default("Please login to access this resource", 400));
+        return next(new ErrorHandler_1.default("Please login to access this resource", 406));
     }
     const decoded = jsonwebtoken_1.default.decode(access_token);
-    console.log(decoded);
+    // console.log(decoded);
     if (!decoded) {
-        return next(new ErrorHandler_1.default("access token is not valid", 400));
+        return next(new ErrorHandler_1.default("access token is not valid", 407));
     }
     // check if the access token is expired
     if (decoded.exp && decoded.exp <= Date.now() / 1000) {
@@ -33,7 +33,7 @@ exports.isAuthenticated = (0, catchAsyncErrors_1.CatchAsyncError)(async (req, re
         const user = await redis_1.redis.get(decoded.id);
         console.log("user");
         if (!user) {
-            return next(new ErrorHandler_1.default("Please login to access this resource", 400));
+            return next(new ErrorHandler_1.default("Please login to access this resource", 408));
         }
         req.user = JSON.parse(user);
         next();
@@ -43,7 +43,7 @@ exports.isAuthenticated = (0, catchAsyncErrors_1.CatchAsyncError)(async (req, re
 const authorizeRoles = (...roles) => {
     return (req, res, next) => {
         if (!roles.includes(req.user?.role || "")) {
-            return next(new ErrorHandler_1.default(`Role: ${req.user?.role} is not allowed to access this resource`, 403));
+            return next(new ErrorHandler_1.default(`Role: ${req.user?.role} is not allowed to access this resource`, 409));
         }
         next();
     };

@@ -135,11 +135,11 @@ exports.updateAccessToken = (0, catchAsyncErrors_1.CatchAsyncError)(async (req, 
         const decoded = jsonwebtoken_1.default.verify(refresh_token, process.env.REFRESH_TOKEN);
         const message = "Could not refresh token";
         if (!decoded) {
-            return next(new ErrorHandler_1.default(message, 400));
+            return next(new ErrorHandler_1.default(message, 405));
         }
         const session = await redis_1.redis.get(decoded.id);
         if (!session) {
-            return next(new ErrorHandler_1.default("Please login for access this resources!", 400));
+            return next(new ErrorHandler_1.default("Please login for access this resources!", 404));
         }
         const user = JSON.parse(session);
         const accessToken = jsonwebtoken_1.default.sign({ id: user._id }, process.env.ACCESS_TOKEN, {
@@ -159,7 +159,7 @@ exports.updateAccessToken = (0, catchAsyncErrors_1.CatchAsyncError)(async (req, 
         next();
     }
     catch (error) {
-        return next(new ErrorHandler_1.default(error.message, 400));
+        next(new ErrorHandler_1.default(error.message, 410));
     }
 });
 // get user info
@@ -183,7 +183,7 @@ exports.getUserInfo = (0, catchAsyncErrors_1.CatchAsyncError)(async (req, res, n
         return next();
     }
     catch (error) {
-        return next(new ErrorHandler_1.default(error.message, 400));
+        return next(new ErrorHandler_1.default(error.message, 403));
     }
 });
 // social auth
